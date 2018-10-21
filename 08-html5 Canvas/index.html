@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="100%" height="100%"></canvas>
+<script>
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext('2d');
+  //<canvas> 요소는 getContext() 메서드를 호출해서, 랜더링 컨텍스트와 그리기 함수들을 사용할 수 있습니다.
+  //2D 그래픽의 경우, CanvasRenderingContext2D을 얻기위해 "2d"로 지정합니다.
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  ctx.strokeStyle = "#BADA55";
+  ctx.lineJoin = 'round'; // round, bevel and miter. By default this property is set to miter. 모양의 모서리를 둥글게 만듭니다. 둥근 모서리의 반경은 선폭과 같습니다.
+  ctx.lineCap = 'round'; // butt, round, square. 모든 선의 끝점을 그리는 방법이 결정
+  ctx.lineWidth = 100;
+  // ctx.globalCompositeOperation = 'multiply'; // 캔버스 2D API 의 속성은 새 모양을 그리는 데 적용 할 합성 작업 유형을 설정합니다. mozilla 참조
+
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  let hue = 0; // change color
+  let direction = true;
+
+  function draw(e) {
+    if (!isDrawing) return;
+    console.log(e);
+    ctx.strokeStyle = `hsl{${hue}, 100%, 50%}`;
+    ctx.beginPath();
+    // start
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+
+    hue++;
+    if (hue >= 360) {
+      hue = 0;
+    }
+    if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+      direction = !direction;
+    }
+
+    if (direction) {
+      ctx.lineWidth++;
+    } else {
+      ctx.lineWidth--;
+    }
+
+  }
+
+  // event
+  canvas.addEventListener('mousedown', function(e) {
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  });
+  //
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseout', () => isDrawing = false);
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>
